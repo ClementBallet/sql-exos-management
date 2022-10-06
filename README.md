@@ -1,0 +1,1 @@
+Voir le fichier PDF pour l'énoncé.

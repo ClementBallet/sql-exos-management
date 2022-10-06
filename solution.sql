@@ -135,3 +135,71 @@ WHERE service.ville = 'Lyon';
 -- 21 Insérer un nouveau service ‘RH’ pour la ville de ‘Nantes’
 INSERT INTO service(`nom`, `ville`) 
 VALUES ('RH','Nantes');
+
+-- 22. Insérer un nouvel employé avec les informations suivantes : 
+-- a. Nom : Smith 
+-- b. Prénom : John 
+-- c. Fonction : Manager 
+-- d. Date d’entrée : 14 mai 2021 
+-- e. Salaire : 2700 
+-- f. Commission : 5 
+-- g. Service_id : 6 
+INSERT INTO `employe` (`id_employe`, `nom`, `prenom`, `fonction`, `date_entree`, `salaire`, `commission`, `service_id`) 
+VALUES (NULL, 'Smith', 'John', 'Manager', '2021-05-14 11:17:44', '2700', '5', '6');
+
+-- 23. Supprimer le dernier service
+DELETE FROM service 
+ORDER BY id_service DESC 
+LIMIT 1;
+
+-- 24. Lister tous les services avec leurs employés, y compris les services qui n’ont aucun employé
+SELECT service.nom, employe.nom, employe.prenom
+FROM service
+LEFT JOIN employe
+ON service.id_service = employe.service_id;
+-- Ou pour avoir le nombres d'employés dans chaque services :
+SELECT service.nom, COUNT(employe.id_employe) AS nb_employes
+FROM service
+LEFT JOIN employe
+ON service.id_service = employe.service_id
+GROUP BY service.nom;
+
+-- 25. Quels sont les services qui n’ont aucun employé ?
+SELECT service.nom, COUNT(employe.id_employe) AS nb_employes
+FROM service
+LEFT JOIN employe
+ON service.id_service = employe.service_id
+GROUP BY service.nom
+HAVING nb_employes = 0;
+
+-- 26. Modifier le nom du service ‘Legal’ en le mettant à ‘Juridique’
+UPDATE service
+SET nom = 'Juridique'
+WHERE nom = 'Legal';
+
+-- 27. Pour tous les employés du service ‘Sales’ mettez leurs commissions à 3
+UPDATE employe 
+SET commission = 3 
+WHERE service_id = (SELECT service.id_service FROM service WHERE service.nom = 'Sales');
+
+-- 28. Créer une table ‘Inscription’ dans la base de données ‘management’ contenant les informations suivantes : 
+-- a. Id : type entier, clé primaire, auto-incrémenté 
+-- b. Nom : type chaines de caractères, 50 caractères, obligatoire 
+-- c. Prenom : type chaines de caractères, 50 caractères, obligatoire 
+-- d. Genre : 1 caractère (H, F, A), pas obligatoire 
+-- e. Email : type chaines de caractères, 255 caractères, unique et obligatoire 
+-- f. Date_inscription : type date et time, valeur par défaut date du jour
+CREATE TABLE `management`.`inscription` ( 
+    `id` INT NOT NULL AUTO_INCREMENT, 
+    `nom` VARCHAR(50) NOT NULL, 
+    `prenom` VARCHAR(50) NOT NULL, 
+    `genre` VARCHAR(1) NULL, 
+    `email` VARCHAR(255) NOT NULL, 
+    `date_inscription` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+    PRIMARY KEY (`id`), 
+    UNIQUE `email` (`email`(255))
+) ENGINE = MyISAM;
+
+-- 29. Modifier la table inscription, en mettant la colonne ‘genre’ obligatoire
+ALTER TABLE inscription
+CHANGE genre genre VARCHAR(1) NOT NULL;
